@@ -2,23 +2,45 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Socket.io</title>
+    <title>DZ - Socket.IO</title>
     <link rel="stylesheet" href="./css/bulma.min.css">
-    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/2.0.4/socket.io.js"></script>
 
 </head>
 <body>
 
-<h1>Socket.io</h1>
+<h1>DZ - Socket.IO</h1>
 
 
 <script>
+    const validToken = (message) => message === 'invalid_token';
+
+    const isValidToken = (message) => {
+        if (validToken(message)) {
+            return alert(message);
+        }
+
+        return true;
+    };
+
     window.onload = function () {
 
-        const socket = io();
+        const socket = io('ws://127.0.0.1:3000', {
+            query: {
+                token: 'DZzzz'
+            },
+            transports: ['websocket']
+        });
 
-        console.log(socket);
+        socket.on('message', (message) => {
+            console.log(message);
+        });
+
+        socket.on('error', (message) => {
+            isValidToken(message);
+        })
     }
+
 
 </script>
 </body>

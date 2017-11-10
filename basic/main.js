@@ -12,17 +12,29 @@ server.listen(3000);
 
 app.use(express.static(path.join(__dirname, 'public')));
 
+/* Config */
+const validToken = 'DZ';
+
+/* Functions */
+const isValidToken = (token) => token === validToken;
+
 /* Middlewares */
 
 io.use((socket, next) => {
 
     const {request} = socket;
+    const {query} = socket.handshake;
 
     const headers = request.headers;
 
     console.log(`Headers:`, headers);
+    console.log(`Query:`, query);
 
-    next();
+    if (!isValidToken(query.token)) {
+        return next(new Error('invalid_token'));
+    }
+
+    return next();
 });
 
 /* Origins */
@@ -45,5 +57,9 @@ io.on('connection', (socket) => {
 
     socket.on('disconnect', (dis) => {
         console.log(`User disconnected: ${dis}`)
-    })
+    });
+
+    setInterval(() => {
+        socket.emit('message', 'new message');
+    }, 1000);
 });
